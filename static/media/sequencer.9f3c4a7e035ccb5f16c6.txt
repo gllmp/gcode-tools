@@ -1,0 +1,215 @@
+class Sequencer {
+  
+  // Constructor
+  Sequencer(Scheduler _scheduler) {
+    currentClipBpm = _scheduler.bpm;
+    currentClipLength = _scheduler.clipLength;
+    currentClipIndex = _scheduler.clipIndex;
+  };
+
+  Clip[] clips;
+  
+  PVector[] clipsPos;
+  //PVector clipsPosOffset;
+  
+  int currentClipBpm;
+  int currentClipLength;
+  int currentClipIndex;
+
+  int clipsNum;
+  int stepsNum;
+  
+  int clipSize;
+
+  int rowIndex;
+  int colIndex;
+
+  void setClips(int _clipsNum) {    
+    clipsNum = _clipsNum;
+
+    clips = new Clip[clipsNum];  
+        
+    clipsPos = new PVector [clipsNum];
+    
+    clipSize = 20;
+
+    //clipsPosOffset = new PVector (clipSize * 4, height/2 - 50);
+    
+    rowIndex = 0;
+    colIndex = 0;
+
+    for (int i = 0; i < clips.length; i++) {   
+      clips[i] = new Clip(i, currentClipBpm, currentClipLength);
+      clipsPos[i] = new PVector (0, 0);
+    }
+    
+    // activate first clip
+    if (clips.length >= 0) clips[0].isActive = true;
+
+  }
+  
+  void setSteps(int _stepsNum, int _channel, int _note, int _velocity) {
+    stepsNum = _stepsNum;
+    
+    for (int i = 0; i < clips.length; i++) {   
+      clips[i].setSteps(stepsNum, _channel, _note, _velocity);
+    }
+  }
+
+  void setClipsPositions(int _clipIndex) { 
+    if (_clipIndex % 4 == 0) {
+      rowIndex = 0;
+      colIndex = _clipIndex;
+      //println(colIndex);
+      //if (_clipIndex != 0) clipsPosOffset.y += clipSize;
+    } else {
+      rowIndex++;
+    }
+   
+    clipsPos[_clipIndex].x = rowIndex * (clipSize * 2) + (width/2) - (clipSize * 3 + clipSize / 2);
+    //clipsPos[_clipIndex].y = clipsPosOffset.y;
+    
+    
+    switch (colIndex) {
+      case(0):
+        clipsPos[_clipIndex].y = height/2 - (clipSize * 3 + clipSize / 2);
+        break;
+      case(4):
+        clipsPos[_clipIndex].y = height/2 - (clipSize + clipSize/2);
+        break;
+      case(8):
+        clipsPos[_clipIndex].y = height/2 + clipSize / 2;
+        break;
+      case(12):
+        clipsPos[_clipIndex].y = height/2 + (clipSize * 2 + clipSize / 2);
+        break;
+      default:
+        break;
+    }    
+    
+    
+    rect(clipsPos[_clipIndex].x, clipsPos[_clipIndex].y, clipSize, clipSize);
+  }
+  
+  void setClipParameters(int _mouseX, int _mouseY, Slider _bpmSlider) {
+    int clipId = this.getClipId(_mouseX, _mouseY);
+    
+    if (clipId != -1) {
+        _bpmSlider.setValue(clips[clipId].bpm);
+    }
+  }
+  
+  int getClipId(int _mouseX, int _mouseY) {
+    // can't set int to null in Java
+    int clipId = -1;
+    
+    for (int i = 0; i < clips.length; i++) {
+      if (_mouseX >= clipsPos[i].x && _mouseX <= clipsPos[i].x + clipSize) {
+        if (_mouseY >= clipsPos[i].y && _mouseY <= clipsPos[i].y + clipSize) {
+          clipId = i;
+          println("CLIP SELECTED: " + clipId);
+        }
+      }  
+    }
+    
+    return clipId;
+  }
+  
+  void update(Scheduler _scheduler) {
+    currentClipBpm = _scheduler.bpm;
+    currentClipLength = _scheduler.clipLength;
+
+    this.updateSteps(_scheduler);
+    
+    // Reset clip at the end of update function to prevent out of sync due to counter reset
+    //this.updateClips(_scheduler);
+    this.loopClip(_scheduler);
+
+}
+  
+  void updateClips(Scheduler _scheduler){
+    if (_scheduler.counter >= currentClipLength) {
+      
+      if (_scheduler.clipIndex < clips.length - 1) {
+        _scheduler.clipIndex++;
+      } else {
+        _scheduler.clipIndex = 0;
+      }
+      
+      currentClipIndex = _scheduler.clipIndex;
+            
+      for (int i = 0; i < clips.length; i++) {
+        clips[i].isActive = false;
+        if ( i == currentClipIndex ) {
+          clips[i].isActive = true;
+          //clips[i].bpm = currentClipBpm;
+          //clips[i].duration = currentClipLength;
+        }  
+      }
+
+      clips[currentClipIndex].bang();
+      
+      // reset scheduler stepIndex from sequencer class, better solution ?
+      // don't reset to follow step index on next clip
+      _scheduler.stepIndex = 0;
+      
+      _scheduler.reset();
+ 
+    }
+  }
+  
+  void updateSteps(Scheduler _scheduler) {
+    // TODO: update all clips simultaneously
+    clips[currentClipIndex].updateSteps(_scheduler);
+  }
+  
+  void loopClip(Scheduler _scheduler) {
+    if (_scheduler.counter >= currentClipLength) {
+            
+      _scheduler.reset();
+      
+      clips[currentClipIndex].resetSteps();
+      
+      clips[currentClipIndex].bang(); 
+    }
+    
+  }
+  
+  void drawClipLength(int _counter) {
+    fill(0, 142, 255);
+    noStroke();
+    rect(0,0, map(_counter, 0, currentClipLength, 0, width), 10);
+  }
+  
+  void drawClips() {
+    for (int i = 0; i < clips.length; i++) {
+      //if(i == currentClipIndex) {
+      if(clips[i].isActive) {
+        //fill(0, 142, 255);
+        noFill();
+        stroke(0, 142, 255);
+      } else {
+        noFill();
+        stroke(255);
+      }
+      
+      this.setClipsPositions(i);
+    }
+  }
+
+  void drawSteps() {
+    for (int i = 0; i < clips[currentClipIndex].steps.length; i++) {
+      //if(i == clips[currentClipIndex].stepIndex) {
+      if(clips[currentClipIndex].steps[i].isActive) {
+        //fill(0, 142, 255);
+        noFill();
+        stroke(0, 142, 255);
+      } else {
+        noFill();
+        stroke(255);
+      }
+      rect((width/clips[currentClipIndex].steps.length)*i + 15, height/2 + 200, 10, 10);   
+    }
+  }
+
+}
