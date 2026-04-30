@@ -1,0 +1,291 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Audio Buffer — Live Coding Presentation</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="topbar">
+        <div class="topbar-line">
+          <span class="badge">Audio Buffer #02 · London</span>
+          <h1 class="event-title">"Show us your screens." Live Coding</h1>
+          <p class="presenter-inline">Guillaume Piccarreta</p>
+          <div class="status-inline">
+            <span id="slideCounter">1 / 6</span>
+            <span id="slideId">intro</span>
+          </div>
+        </div>
+      </header>
+
+      <main class="stage">
+        <aside class="left-column">
+          <nav class="slide-menu" id="slideMenu" aria-label="Slide Menu"></nav>
+
+          <section class="terminal-shell" aria-label="Presentation Terminal Input">
+            <label class="terminal-input-wrap" for="consoleInput">
+              <span>&gt;</span>
+              <input
+                id="consoleInput"
+                type="text"
+                autocomplete="off"
+                autocorrect="off"
+                spellcheck="false"
+                placeholder="next, prev, goto whoami"
+              />
+            </label>
+          </section>
+
+          <section class="console-shell" aria-label="Presentation Console">
+            <div class="console-output" id="consoleOutput" role="log" aria-live="polite"></div>
+          </section>
+        </aside>
+
+        <div class="slides-wrap">
+          <section class="slide" id="intro" data-title="intro" data-menu="intro">
+            <h2>Audio Buffer London - Live Coding</h2>
+            <div class="text-stack">
+              <p>
+                Live coding is the practice of writing and changing code while it runs, making programming itself a visible, performative act.
+              </p>
+              <p>
+                In live coding performances, source code is projected and becomes part of the artistic material, alongside sound, visuals, and timing.
+              </p>
+              <p>
+                It creates a shared, transparent space where algorithms are composed, modified, and interpreted in real time.
+              </p>
+            </div>
+            <div class="media-grid intro-grid">
+              <figure class="media-card plain-media">
+                <img src="./assets/images/www/orca.jpg" alt="Orca visual language interface" />
+              </figure>
+              <figure class="media-card plain-media">
+                <img src="./assets/images/live/arte-tracks-livecoding-02.png" alt="Arte Tracks live coding visual" />
+              </figure>
+              <figure class="media-card plain-media">
+                <img src="./assets/images/gcode-live/neurocode.jpg" alt="Neurocode live coding visual" />
+              </figure>
+              <figure class="media-card plain-media">
+                <img src="./assets/images/occ/OCC-07.png" alt="OCC interface close-up" />
+              </figure>
+            </div>
+          </section>
+
+          <section class="slide" id="whoami" data-title="whoami" data-menu="whoami">
+            <h2>whoami</h2>
+            <p class="whoami-bio">
+              Guillaume Piccarreta (gcode) is a programmer, musician, and digital artist exploring the interaction between sound and image. After studying digital art at Paris Panthéon-Sorbonne University, he lived in Tokyo for four years, where he developed creative applications, audiovisual performances, and interactive installations. He currently works at IRCAM, contributing to projects that bring together artists and researchers around new forms of sonic experimentation. Through his project gcode, he explores the relationships between generative algorithms, process-based aesthetics, and computational tools, expressed through audiovisual performances, installations, and workshops within the live coding and digital art communities.
+            </p>
+            <p class="whoami-handle">
+              instagram: <span class="whoami-tag">@_.gcode</span> · website:
+              <a class="whoami-tag whoami-tag-link" href="https://gcode.tools/" target="_blank" rel="noreferrer">gcode.tools</a>
+            </p>
+            <div class="media-grid whoami-grid">
+              <figure class="media-card plain-media">
+                <img src="./assets/images/gcode/gcode-algorave-lesucre-280625-credits-fanny-desbaumes.jpg" alt="gcode live performance at Le Sucre" />
+              </figure>
+              <figure class="media-card plain-media">
+                <video autoplay loop muted playsinline preload="metadata" src="./assets/videos/gcode-tools-loop.mp4" aria-label="gcode tools loop"></video>
+              </figure>
+              <figure class="media-card plain-media">
+                <img src="./assets/images/gcode/algorave-2025.png" alt="Algorave 2025 visual" />
+              </figure>
+              <figure class="media-card plain-media">
+                <video autoplay loop muted playsinline preload="metadata" src="./assets/videos/gcode-le-sucre-loop.mp4" aria-label="gcode le sucre loop"></video>
+              </figure>
+              <figure class="media-card plain-media">
+                <video autoplay loop muted playsinline preload="metadata" src="./assets/videos/gcode-rico-1-loop.mp4" aria-label="gcode live coding animated visual"></video>
+              </figure>
+              <figure class="media-card plain-media black-bg">
+                <img src="./assets/images/live/arte-tracks-livecoding-01.png" alt="Arte Tracks live coding visual" />
+              </figure>
+            </div>
+          </section>
+
+          <section class="slide" id="live-coding-101" data-title="live coding 101" data-menu="live coding 101">
+            <h2>live coding 101</h2>
+            <div class="live101-top">
+              <div class="text-stack">
+                <p>
+                  Live coding can be understood as real-time software writing:
+                  changing a running program, composing through code, and exposing process as performance.
+                </p>
+                <p>
+                  In <em>Live Coding: A User’s Manual</em> (MIT Press, 2022), the practice is described as
+                  "thinking in public," where writing and rewriting code becomes visible,
+                  improvisatory, and open-ended.
+                </p>
+              </div>
+              <figure class="media-card book-card">
+                <img src="./assets/images/www/live-coding-book.jpg" alt="Live Coding: A User's Manual book cover" />
+                <figcaption>Live Coding: A User's Manual (MIT Press, 2022)</figcaption>
+              </figure>
+            </div>
+
+            <div class="live101-bottom">
+              <div class="manifesto-row">
+                <figure class="media-card renick-card">
+                  <img src="./assets/images/www/renick-bell-live-coding.png" alt="Renick Bell live coding performance" />
+                </figure>
+                <section class="info-card manifesto-card">
+                  <h3><a href="https://toplap.org/wiki/ManifestoDraft" target="_blank" rel="noreferrer">manifesto draft (toplap)</a></h3>
+                  <ul>
+                    <li>"Obscurantism is dangerous. Show us your screens."</li>
+                    <li>Give us access to the performer's mind, to the whole human instrument.</li>
+                    <li>Programs are instruments that can change themselves</li>
+                    <li>The program is to be transcended - Artificial language is the way.</li>
+                    <li>Code should be seen as well as heard, underlying algorithms viewed as well as their visual outcome.</li>
+                    <li>Live coding is not about tools. Algorithms are thoughts. Chainsaws are tools. That's why algorithms are sometimes harder to notice than chainsaws.</li>
+                  </ul>
+                </section>
+              </div>
+
+              <div class="algorave-row">
+                <figure class="media-card algorave-logo-card">
+                  <img src="./assets/images/www/algorave.png" alt="Algorave visual" />
+                </figure>
+                <section class="info-card algorave-card">
+                  <h3><a href="https://algorave.com/" target="_blank" rel="noreferrer">algorave</a></h3>
+                  <p>
+                    Algorave is made from sounds "wholly or predominantly characterised by
+                    the emission of a succession of repetitive conditionals."
+                  </p>
+                  <p>
+                    It breaks barriers between writing algorithms and making dance music live:
+                    humans compose in real time with code, and the dancefloor closes the loop.
+                  </p>
+                </section>
+              </div>
+
+              <section class="info-card resources-card">
+                <div class="text-stack compact resources-col">
+                  <p><strong>platforms</strong></p>
+                  <ul>
+                    <li><a href="https://supercollider.github.io/" target="_blank" rel="noreferrer">SuperCollider</a></li>
+                    <li><a href="https://tidalcycles.org/" target="_blank" rel="noreferrer">Tidal Cycles</a></li>
+                    <li><a href="https://strudel.cc/" target="_blank" rel="noreferrer">Strudel</a></li>
+                    <li><a href="https://100r.co/site/orca.html" target="_blank" rel="noreferrer">Orca</a></li>
+                    <li><a href="https://sova.livecoding.fr/" target="_blank" rel="noreferrer">Sova</a></li>
+                  </ul>
+                </div>
+                <div class="text-stack compact resources-col">
+                  <p><strong>resources</strong></p>
+                  <ul>
+                    <li><a href="https://toplap.org/" target="_blank" rel="noreferrer">TOPLAP</a></li>
+                    <li><a href="https://toplap.org/wiki/ManifestoDraft" target="_blank" rel="noreferrer">ManifestoDraft</a></li>
+                    <li><a href="https://livecoding.fr/" target="_blank" rel="noreferrer">livecoding.fr</a></li>
+                    <li><a href="https://iclc.toplap.org/" target="_blank" rel="noreferrer">International Conference on Live Coding (ICLC)</a></li>
+                    <li><a href="https://www.youtube.com/watch?v=Crz6R4p_owI" target="_blank" rel="noreferrer">Live coding talk (YouTube)</a></li>
+                  </ul>
+                </div>
+              </section>
+            </div>
+          </section>
+
+          <section class="slide" id="why-live-coding" data-title="why" data-menu="why">
+            <h2>why</h2>
+            <div class="text-stack">
+              <p>
+                Live coding is also an inclusive community practice. It creates spaces where
+                artists, developers, and students can learn from each other across disciplines.
+              </p>
+              <p>
+                It supports collaboration with other artists, helps people become familiar with code,
+                and demystifies programming by making process visible.
+              </p>
+              <ul>
+                <li>Process over product: the audience witnesses ideas becoming form.</li>
+                <li>Compact rules can produce rich and evolving sonic structures.</li>
+                <li>Errors become creative material instead of backstage problems.</li>
+                <li>Improvisation is framed by explicit algorithmic constraints.</li>
+              </ul>
+            </div>
+            <div class="media-grid why-grid">
+              <figure class="media-card">
+                <img src="./assets/images/live/MAC-01.png" alt="Live coding stage with projected code" />
+              </figure>
+              <figure class="media-card">
+                <img src="./assets/images/lpm/LPM-1.jpg" alt="LPM live coding event" />
+              </figure>
+              <figure class="media-card">
+                <img src="./assets/images/www/alex-mclean-live-coding.jpeg" alt="Alex McLean live coding" />
+              </figure>
+            </div>
+          </section>
+
+          <section class="slide" id="events" data-title="events" data-menu="events">
+            <h2>events</h2>
+            <div class="events-layout">
+              <p class="events-lead">
+                Selected events from live coding performances across clubs, art spaces, and educational contexts.
+              </p>
+              <div class="media-grid performances-grid events-grid">
+                <figure class="media-card media-video">
+                  <video controls preload="metadata" playsinline src="./assets/videos/ircam-improtech-live-coding-practices.mp4"></video>
+                  <figcaption>IRCAM Improtech - live coding practices</figcaption>
+                </figure>
+                <figure class="media-card media-video">
+                  <video controls preload="metadata" playsinline src="./assets/videos/occ-live-coding-compressed.mp4"></video>
+                  <figcaption>OCC live coding excerpt</figcaption>
+                </figure>
+                <figure class="media-card">
+                  <video autoplay loop muted playsinline preload="metadata" src="./assets/videos/algorave-2025-01-loop.mp4" aria-label="Algorave 2025 animated visual"></video>
+                  <figcaption>algorave 2025</figcaption>
+                </figure>
+                <figure class="media-card media-video">
+                  <video controls preload="metadata" playsinline src="./assets/videos/gcode-rico-av-livecoding.mp4"></video>
+                  <figcaption>gcode a/v live at RiCO Collective (Paris, 2025)</figcaption>
+                </figure>
+              </div>
+            </div>
+          </section>
+
+          <section class="slide" id="occ" data-title="occ" data-menu="occ">
+            <h2>occ</h2>
+            <div class="occ-layout">
+              <div class="occ-info">
+                <p>OCC is a live coding environment for audiovisual performance. You write short code blocks and execute them in real time.</p>
+                <ul>
+                  <li>Visual scene and audio engine are controlled from the same language.</li>
+                  <li>Commands are designed to stay compact while performing.</li>
+                  <li>Switch from object-level coding to macro sequencing with the 4x4 grid.</li>
+                </ul>
+                <p><strong>Live process</strong></p>
+                <ul>
+                  <li>Reset and set a base camera.</li>
+                  <li>Start one or more audio layers (sound, inst, seq).</li>
+                  <li>Add visual groups and triggers.</li>
+                  <li>Move across scripts with grid commands.</li>
+                </ul>
+              </div>
+              <div class="media-grid occ-grid">
+                <figure class="media-card">
+                  <img src="./assets/images/occ/OCC-01.png" alt="OCC interface screenshot" />
+                </figure>
+                <figure class="media-card media-video no-caption">
+                  <video autoplay loop muted playsinline preload="metadata" src="./assets/videos/occ-live-coding-short.mp4"></video>
+                </figure>
+                <figure class="media-card">
+                  <img src="./assets/images/occ/OCC-06.png" alt="OCC interface module" />
+                </figure>
+                <figure class="media-card">
+                  <video autoplay loop muted playsinline preload="metadata" src="./assets/videos/gcode-rico-2-loop.mp4" aria-label="gcode rico live visual loop"></video>
+                </figure>
+                <figure class="media-card">
+                  <img src="./assets/images/occ/OCC-05.png" alt="OCC interface with code" />
+                </figure>
+                <figure class="media-card">
+                  <img src="./assets/images/occ/OCC-08.png" alt="OCC timeline and structure" />
+                </figure>
+              </div>
+            </div>
+          </section>
+        </div>
+      </main>
+    </div>
+
+    <script src="./app.js" type="module"></script>
+  </body>
+</html>
