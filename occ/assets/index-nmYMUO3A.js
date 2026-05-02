@@ -6587,6 +6587,7 @@ info(on)
 
 bpm(120)
 transport(on)
+triggerlog(on)
 
 audioinput(on)
 audiosignal(on)
@@ -6846,6 +6847,7 @@ edit gPerc.rot(0,-9.1,0)
 // ------------------------------
 // global trigger
 // trigger(on) 
+// triggerlog(on)
 
 // group triggers
 trigger(gLaser)
@@ -6919,6 +6921,8 @@ graph(on)
 mixer(on)
 
 info(off)
+
+triggerlog(on)
 
 // ------------------------------
 // CAMERA
