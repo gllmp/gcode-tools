@@ -6676,11 +6676,11 @@ sample:
   .reverse(off)
   .pan(0)
 
-seq:
-  .id(kickseq)
-  .target(kick)
-  .rate(1/4)
-  .pat("o...o....o..")
+// seq:
+  // .id(kickseq)
+  // .target(kick)
+  // .rate(1/4)
+  // .pat("o...o....o..")
   // .human(0.01)
 
 sample:
@@ -7112,21 +7112,21 @@ gen(bipseq,0.42,16,1)
 // - phasor(10,0,{min:0}) + gt(...,0.85): short rhythmic gates
 // - pan(...): left/right movement
 // - gain: final output level
-sound:
-  .id(click)
-  .source(
-    mul(
-      cycle(8000),
-      gt( phasor(10,0,{min:0}), 0.85 )
-    )
-  )
-  .pan(
-    add(
-      0.5,
-      mul( cycle(0.5), 1.0 )
-    )
-  )
-  .gain(0.2)
+// sound:
+  // .id(click)
+  // .source(
+    // mul(
+      // cycle(8000),
+      // gt( phasor(10,0,{min:0}), 0.85 )
+    // )
+  // )
+  // .pan(
+    // add(
+      // 0.5,
+      // mul( cycle(0.5), 1.0 )
+    // )
+  // )
+  // .gain(0.2)
 
 stop(click)
 
@@ -7289,18 +7289,18 @@ gridchain((1,1),(1,2),(1,3),(1,4),(2,1),(2,2),(2,3),(2,4),380,980)
 // gridrate(min,max):
 // - each transition picks a random duration between min and max
 // - follow(...) still decides the transition direction/mode
-follow(next)
+// follow(next)
 
-gridrate(1800,6200)
+// gridrate(1800,6200)
 
 // ------------------------------
 // STOP / MANUAL
 // ------------------------------
-gridrate(0)
-follow(manual)
+// gridrate(0)
+// follow(manual)
 
 // transport(off) also stops trigger mode
-transport(off)
+// transport(off)
 
 // ------------------------------
 // GRID SLOTS
