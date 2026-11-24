@@ -1,1 +1,152 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"/><link rel="icon" href="./favicon.ico"/><meta name="viewport" content="width=device-width,initial-scale=1"/><meta name="theme-color" content="#000000"/><meta name="description" content="gcode@rt_homepage__fair"/><meta property="og:image" content="./og-image.png"/><meta property="og:title" content="~gcode"/><meta property="og:url" content="https://arthomepagefair.net/~gcode/"/><meta property="og:site_name" content="gcode"/><meta property="og:type" content="website"/><meta property="og:description" content="gcode web portal"/><link rel="apple-touch-icon" href="./icon.png"/><link rel="manifest" href="./manifest.json"/><title>gcode</title><script defer="defer" src="./static/js/main.111a6296.js"></script><link href="./static/css/main.dbe3f3d7.css" rel="stylesheet"></head><body><noscript>You need to enable JavaScript to run this app.</noscript><div id="root"></div></body></html>
+<!DOCTYPE html><html lang="en"> <head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="gcode is the audiovisual project of Guillaume Piccarreta."><meta name="theme-color" content="#111311"><link rel="canonical" href="https://gcode.tools/"><link rel="icon" href="/favicon.svg" type="image/svg+xml"><link rel="preload" href="/fonts/gridnik.woff" as="font" type="font/woff" crossorigin><meta property="og:type" content="website"><meta property="og:title" content="gcode"><meta property="og:description" content="gcode is the audiovisual project of Guillaume Piccarreta."><meta property="og:url" content="https://gcode.tools/"><meta property="og:image" content="https://gcode.tools/media/gcode-dot-grid.jpg"><meta name="twitter:card" content="summary"><title>gcode</title><script>
+      // Set the language before first paint: `?lang=ja|en` wins, then the stored choice.
+      (() => {
+        let locale = new URLSearchParams(location.search).get('lang');
+        try {
+          if (locale === 'ja' || locale === 'en') localStorage.setItem('gcode-lang', locale);
+          else locale = localStorage.getItem('gcode-lang');
+        } catch {}
+        if (locale === 'ja') { document.documentElement.dataset.locale = 'ja'; document.documentElement.lang = 'ja'; }
+      })();
+    </script><link rel="stylesheet" href="/_astro/_release_.BHv7yDJf.css"></head> <body> <div class="frame"> <header class="site-header"> <a class="brand" href="/" aria-current="page">gcode</a> <div class="header-tools"> <nav class="nav" aria-label="primary navigation"><a href="/bio/">bio</a><a href="/releases/">releases</a><a href="/links/">links</a></nav> <div class="lang-switch" role="group" aria-label="language"> <button type="button" data-set-lang="en" aria-pressed="true">EN</button>/<button type="button" data-set-lang="ja" aria-pressed="false">JP</button> </div> </div> </header> <main> <h1 class="visually-hidden">gcode</h1> <div class="field-wrap"><canvas class="field" aria-hidden="true" data-source="// Checkerboard of dot-matrix squares. Rows and columns slide by one cell in
+// quick bursts; at irregular intervals the grid flashes, its own source code
+// scrolls past, and the checkerboard resets.
+const canvas = document.querySelector<HTMLCanvasElement>('canvas.field');
+if (canvas) run(canvas);
+
+function run(canvas: HTMLCanvasElement) {
+  const ctx = canvas.getContext('2d')!;
+  const wrap = canvas.parentElement!;
+  const source = (canvas.dataset.source ?? '').split('\n');
+  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const cells = 8; // squares per side
+  const dots = 5; // dots per square side
+  const pitch = 6; // dot slots per cell; the spare slot is the gutter
+  const colors = { ground: '#111311', dot: '#f2f2f2', code: '#d8d8d8' };
+  const timing = { slide: 110, flash: 50, code: 520, flashOut: 40 };
+  const random = (min: number, max: number) => min + Math.random() * (max - min);
+  const checker = () => Array.from({ length: cells }, (_, y) => Array.from({ length: cells }, (_, x) => (x + y) % 2 === 0));
+
+  let grid = checker();
+  let slot = 0, cell = 0, dot = 1, dpr = 1;
+
+  const resize = () => {
+    dpr = window.devicePixelRatio || 1;
+    const size = Math.min(wrap.clientWidth * .62, wrap.clientHeight * .55, 264);
+    slot = Math.max(2, Math.floor(size * dpr / (cells * pitch)));
+    cell = slot * pitch;
+    dot = Math.max(1, Math.round(slot * .28));
+    canvas.width = canvas.height = cell * cells;
+    canvas.style.width = canvas.style.height = `${cell * cells / dpr}px`;
+  };
+
+  type Slide = { axis: 'row' | 'col'; index: number; dir: 1 | -1; start: number };
+  type Phase = 'pattern' | 'flash' | 'code' | 'flash-out';
+  let slide: Slide | null = null;
+  let nextMove = performance.now() + 600;
+  let phase: Phase = 'pattern';
+  let phaseStart = 0;
+  let nextFlash = performance.now() + random(2500, 7000);
+  let codeLine = 0;
+
+  const shift = ({ axis, index, dir }: Slide) => {
+    if (axis === 'row') {
+      const row = grid[index];
+      grid[index] = row.map((_, x) => row[(x - dir + cells) % cells]);
+    } else {
+      const column = grid.map((row) => row[index]);
+      grid.forEach((row, y) => { row[index] = column[(y - dir + cells) % cells]; });
+    }
+  };
+
+  const enter = (next: Phase, time: number) => { phase = next; phaseStart = time; };
+
+  const advance = (time: number) => {
+    const elapsed = time - phaseStart;
+    if (phase === 'pattern' &#38;&#38; time >= nextFlash) {
+      codeLine = Math.floor(Math.random() * source.length);
+      enter('flash', time);
+    } else if (phase === 'flash' &#38;&#38; elapsed >= timing.flash) enter('code', time);
+    else if (phase === 'code' &#38;&#38; elapsed >= timing.code) enter('flash-out', time);
+    else if (phase === 'flash-out' &#38;&#38; elapsed >= timing.flashOut) {
+      grid = checker();
+      slide = null;
+      nextMove = time + 400;
+      nextFlash = time + random(2500, 8000);
+      enter('pattern', time);
+    }
+    if (phase !== 'pattern') return;
+    if (slide &#38;&#38; time - slide.start >= timing.slide) {
+      shift(slide);
+      slide = null;
+      nextMove = time + (Math.random() < .12 ? random(500, 1100) : random(0, 90));
+    }
+    if (!slide &#38;&#38; time >= nextMove) {
+      slide = { axis: Math.random() < .5 ? 'row' : 'col', index: Math.floor(Math.random() * cells), dir: Math.random() < .5 ? 1 : -1, start: time };
+    }
+  };
+
+  const square = (x: number, y: number) => {
+    for (let i = 0; i < dots; i++) for (let j = 0; j < dots; j++) {
+      ctx.fillRect(Math.round(x + (i + .5) * slot + (slot - dot) / 2), Math.round(y + (j + .5) * slot + (slot - dot) / 2), dot, dot);
+    }
+  };
+
+  const drawPattern = (time: number) => {
+    const span = cell * cells;
+    const progress = slide ? 1 - (1 - Math.min(1, (time - slide.start) / timing.slide)) ** 3 : 0;
+    ctx.fillStyle = colors.ground;
+    ctx.fillRect(0, 0, span, span);
+    ctx.fillStyle = colors.dot;
+    grid.forEach((row, y) => row.forEach((filled, x) => {
+      if (!filled) return;
+      const moving = slide &#38;&#38; (slide.axis === 'row' ? slide.index === y : slide.index === x);
+      if (!moving) return square(x * cell, y * cell);
+      const offset = slide!.dir * progress * cell;
+      const [dx, dy] = slide!.axis === 'row' ? [offset, 0] : [0, offset];
+      // Draw the wrapped copy too; whichever half is off-canvas is clipped.
+      const [wx, wy] = slide!.axis === 'row' ? [-slide!.dir * span, 0] : [0, -slide!.dir * span];
+      square(x * cell + dx, y * cell + dy);
+      square(x * cell + dx + wx, y * cell + dy + wy);
+    }));
+  };
+
+  const drawCode = (elapsed: number) => {
+    const span = cell * cells;
+    const size = Math.max(Math.round(8 * dpr), Math.round(slot * 1.3));
+    const lineHeight = Math.round(size * 1.25);
+    const scroll = elapsed * .09; // lines per millisecond
+    ctx.fillStyle = colors.ground;
+    ctx.fillRect(0, 0, span, span);
+    ctx.fillStyle = colors.code;
+    ctx.font = `${size}px ui-monospace, Menlo, monospace`;
+    ctx.textBaseline = 'top';
+    const first = codeLine + Math.floor(scroll);
+    const top = -(scroll % 1) * lineHeight;
+    for (let row = 0; row <= Math.ceil(span / lineHeight); row++) {
+      ctx.fillText(source[(first + row) % source.length], slot, top + row * lineHeight);
+    }
+  };
+
+  const draw = (time: number) => {
+    if (phase === 'pattern') drawPattern(time);
+    else if (phase === 'code') drawCode(time - phaseStart);
+    else {
+      ctx.fillStyle = colors.dot;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+    }
+  };
+
+  const frame = (time: number) => {
+    advance(time);
+    draw(time);
+    window.requestAnimationFrame(frame);
+  };
+
+  new ResizeObserver(() => { resize(); if (reducedMotion) draw(0); }).observe(wrap);
+  resize();
+  if (reducedMotion) draw(0);
+  else window.requestAnimationFrame(frame);
+}
+"></canvas></div> </main> <footer class="site-footer"><span class="copyright-sign">©</span> Guillaume Piccarreta</footer> </div> <script type="module">const a=document.documentElement,s=document.querySelectorAll("[data-set-lang]"),c=e=>{e==="ja"?a.dataset.locale="ja":delete a.dataset.locale,a.lang=e,s.forEach(t=>t.setAttribute("aria-pressed",String(t.dataset.setLang===e)))};s.forEach(e=>e.addEventListener("click",()=>{const t=e.dataset.setLang;try{localStorage.setItem("gcode-lang",t)}catch{}c(t)}));c(a.dataset.locale==="ja"?"ja":"en");</script> </body> </html> <script type="module">const L=document.querySelector("canvas.field");L&&K(L);function K(i){const r=i.getContext("2d"),R=i.parentElement,q=(i.dataset.source??"").split(`
+`),O=window.matchMedia("(prefers-reduced-motion: reduce)").matches,l=8,_=5,b=6,w={ground:"#111311",dot:"#f2f2f2",code:"#d8d8d8"},M={slide:110,flash:50,code:520,flashOut:40},x=(t,e)=>t+Math.random()*(e-t),C=()=>Array.from({length:l},(t,e)=>Array.from({length:l},(a,n)=>(n+e)%2===0));let u=C(),d=0,s=0,m=1,y=1;const H=()=>{y=window.devicePixelRatio||1;const t=Math.min(R.clientWidth*.62,R.clientHeight*.55,264);d=Math.max(2,Math.floor(t*y/(l*b))),s=d*b,m=Math.max(1,Math.round(d*.28)),i.width=i.height=s*l,i.style.width=i.style.height=`${s*l/y}px`};let o=null,z=performance.now()+600,f="pattern",A=0,P=performance.now()+x(2500,7e3),$=0;const T=({axis:t,index:e,dir:a})=>{if(t==="row"){const n=u[e];u[e]=n.map((c,h)=>n[(h-a+l)%l])}else{const n=u.map(c=>c[e]);u.forEach((c,h)=>{c[e]=n[(h-a+l)%l]})}},S=(t,e)=>{f=t,A=e},W=t=>{const e=t-A;f==="pattern"&&t>=P?($=Math.floor(Math.random()*q.length),S("flash",t)):f==="flash"&&e>=M.flash?S("code",t):f==="code"&&e>=M.code?S("flash-out",t):f==="flash-out"&&e>=M.flashOut&&(u=C(),o=null,z=t+400,P=t+x(2500,8e3),S("pattern",t)),f==="pattern"&&(o&&t-o.start>=M.slide&&(T(o),o=null,z=t+(Math.random()<.12?x(500,1100):x(0,90))),!o&&t>=z&&(o={axis:Math.random()<.5?"row":"col",index:Math.floor(Math.random()*l),dir:Math.random()<.5?1:-1,start:t}))},E=(t,e)=>{for(let a=0;a<_;a++)for(let n=0;n<_;n++)r.fillRect(Math.round(t+(a+.5)*d+(d-m)/2),Math.round(e+(n+.5)*d+(d-m)/2),m,m)},D=t=>{const e=s*l,a=o?1-(1-Math.min(1,(t-o.start)/M.slide))**3:0;r.fillStyle=w.ground,r.fillRect(0,0,e,e),r.fillStyle=w.dot,u.forEach((n,c)=>n.forEach((h,p)=>{if(!h)return;if(!(o&&(o.axis==="row"?o.index===c:o.index===p)))return E(p*s,c*s);const k=o.dir*a*s,[v,B]=o.axis==="row"?[k,0]:[0,k],[I,J]=o.axis==="row"?[-o.dir*e,0]:[0,-o.dir*e];E(p*s+v,c*s+B),E(p*s+v+I,c*s+B+J)}))},G=t=>{const e=s*l,a=Math.max(Math.round(8*y),Math.round(d*1.3)),n=Math.round(a*1.25),c=t*.09;r.fillStyle=w.ground,r.fillRect(0,0,e,e),r.fillStyle=w.code,r.font=`${a}px ui-monospace, Menlo, monospace`,r.textBaseline="top";const h=$+Math.floor(c),p=-(c%1)*n;for(let g=0;g<=Math.ceil(e/n);g++)r.fillText(q[(h+g)%q.length],d,p+g*n)},F=t=>{f==="pattern"?D(t):f==="code"?G(t-A):(r.fillStyle=w.dot,r.fillRect(0,0,i.width,i.height))},j=t=>{W(t),F(t),window.requestAnimationFrame(j)};new ResizeObserver(()=>{H(),O&&F(0)}).observe(R),H(),O?F(0):window.requestAnimationFrame(j)}</script>
